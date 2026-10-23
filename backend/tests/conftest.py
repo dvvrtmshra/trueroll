@@ -1,0 +1,71 @@
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from app.core.database import get_db
+from app.models import Base
+from app.main import app
+
+TEST_DATABASE_URL = "sqlite:///./test_trueroll.db"
+
+engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_db():
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def db():
+    session = TestingSession()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+@pytest.fixture(scope="session")
+def session_db():
+    """Session-scoped DB session for fixtures that outlive a single test."""
+    session = TestingSession()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+@pytest.fixture
+def client(db):
+    def override_get_db():
+        try:
+            yield db
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as c:
+        yield c
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def seed_user(db):
+    from app.models.user import User
+    from app.core.roles import Role
+    u = User(
+        id="test-user-001",
+        email="admin@trueroll.test",
+        role=Role.SYSTEM_ADMIN.value,
+        is_active=True,
+    )
+    db.add(u)
+    db.commit()
+    db.refresh(u)
+    yield u
+    db.delete(u)
+    db.commit()

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "demo-nat-001",
+    "email": "national@trueroll.demo",
+    "role": "NATIONAL_OFFICER",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-reg-001",
+    "email": "regional.north@trueroll.demo",
+    "role": "REGIONAL_OFFICER",
+    "region": "NORTH",
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-reg-002",
+    "email": "regional.south@trueroll.demo",
+    "role": "REGIONAL_OFFICER",
+    "region": "SOUTH",
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-ro-001",
+    "email": "rules.owner@trueroll.demo",
+    "role": "RULES_OWNER",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-ra-001",
+    "email": "rules.approver@trueroll.demo",
+    "role": "RULES_APPROVER",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-ca-001",
+    "email": "college.admin@trueroll.demo",
+    "role": "COLLEGE_ADMIN",
+    "region": "NORTH",
+    "institution_id": "INST-0001",
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-st-001",
+    "email": "student@trueroll.demo",
+    "role": "STUDENT",
+    "region": null,
+    "institution_id": null,
+    "student_id": "STU-00001",
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-em-001",
+    "email": "employer@trueroll.demo",
+    "role": "EMPLOYER",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": "demo-employer-001",
+    "is_active": true
+  },
+  {
+    "id": "demo-aud-001",
+    "email": "auditor@trueroll.demo",
+    "role": "AUDITOR",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  },
+  {
+    "id": "demo-sys-001",
+    "email": "sysadmin@trueroll.demo",
+    "role": "SYSTEM_ADMIN",
+    "region": null,
+    "institution_id": null,
+    "student_id": null,
+    "employer_id": null,
+    "is_active": true
+  }
+]

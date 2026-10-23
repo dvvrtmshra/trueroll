@@ -1,0 +1,47 @@
+# secrets and keys — never commit
+.env
+vault/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Trained model binaries (keep .json eval outputs)
+models/*.pkl
+models/*.joblib
+models/*.bin
+
+# Uploaded runtime files (generated at runtime, not seeded)
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
