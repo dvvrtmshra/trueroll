@@ -51,6 +51,9 @@ def main() -> None:
         from seed import populate_seat_buckets
         populate_seat_buckets.run(db)
 
+        from seed import generate_matching_pairs
+        generate_matching_pairs.run(db)
+
         from seed import generate_audit_history
         generate_audit_history.run(db)
 

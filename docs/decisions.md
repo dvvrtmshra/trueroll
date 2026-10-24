@@ -136,6 +136,34 @@ visible, causing `IntegrityError`. The flush pattern ensures correct insert orde
 
 ---
 
+---
+
+## Phase 3 — Ingestion, identity, duplicates, simulators
+
+### D14. Student ID derived from institution+year+student_ref hash
+
+**Decision:** Student IDs in the upload pipeline use `STU-{md5(institution_id:academic_year:student_ref)[:12]}` rather than the full concatenation.
+
+**Rationale:** The full `STU-{institution_id}-{academic_year}-{student_ref}` string can exceed the 36-character ID column limit. A short MD5 prefix is deterministic and collision-resistant for prototype scale.
+
+---
+
+### D15. opted_out flag in CSV upload
+
+**Decision:** The upload CSV accepts an optional `opted_out` column (true/yes/1). Students with this set are assigned tier T4 without APAAR check.
+
+**Rationale:** Spec section 6.2 states opted-out students are T4. Since APAAR is not mandatory and rejection is never allowed for missing/unverified IDs, opted-out students are counted normally with no penalty.
+
+---
+
+### D16. Fuzzy score formula thresholds
+
+**Decision:** Score = 0.50 * name_sim + 0.35 * dob_sim + 0.15 * course_year_sim. Threshold ≥ 0.93 → D4 review case; 0.85–0.93 → D5 watch list. Without same_course, identical name+DOB = 0.85 = D5 boundary (D5). With same_course, it = 1.0 = D4.
+
+**Rationale:** When same_course is not known (cross-institution), the 0.85 boundary correctly puts identical-name-DOB into D5 (watch list, not auto-review) unless the same course is confirmed. Nothing is auto-flagged regardless of score.
+
+---
+
 ### D10. ApiKey table reused for institution keys
 
 **Decision:** The `api_key` table (designed for employer API keys) is reused for

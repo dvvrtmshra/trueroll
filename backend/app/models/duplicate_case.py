@@ -19,3 +19,8 @@ class DuplicateCase(Base):
     opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     resolved_by: Mapped[str | None] = mapped_column(String(36))
+    # Phase 3 fields
+    duplicate_class: Mapped[str] = mapped_column(String(5), nullable=False, default="D2")  # D1-D5
+    evidence: Mapped[str | None] = mapped_column(Text)  # JSON
+    institution_id_a: Mapped[str | None] = mapped_column(String(20))
+    institution_id_b: Mapped[str | None] = mapped_column(String(20))

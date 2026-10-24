@@ -18,3 +18,14 @@ class Upload(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
     uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Phase 3 fields
+    file_hash: Mapped[str | None] = mapped_column(String(64), index=True)
+    academic_year: Mapped[str | None] = mapped_column(String(10))
+    course_approval_id: Mapped[str | None] = mapped_column(String(50))
+    idempotency_key: Mapped[str | None] = mapped_column(String(255))
+    rows_accepted: Mapped[int] = mapped_column(Integer, default=0)
+    rows_warning: Mapped[int] = mapped_column(Integer, default=0)
+    rows_errors: Mapped[int] = mapped_column(Integer, default=0)
+    identity_tiers: Mapped[str | None] = mapped_column(Text)   # JSON
+    duplicates_summary: Mapped[str | None] = mapped_column(Text)  # JSON
+    ledger_results: Mapped[str | None] = mapped_column(Text)   # JSON

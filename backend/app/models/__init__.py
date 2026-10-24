@@ -21,6 +21,7 @@ from app.models.employer import Employer
 from app.models.outbox import Outbox
 from app.models.api_key import ApiKey
 from app.models.setting import Setting
+from app.models.matching_pair import MatchingPair
 
 __all__ = [
     "Base",
@@ -28,5 +29,5 @@ __all__ = [
     "SeatBucket", "Rule", "RuleVersion", "Evaluation",
     "Flag", "FlagEvent", "ReviewPriority", "DuplicateCase",
     "Upload", "UploadError", "Consent", "Credential", "VerificationLog",
-    "AuditEntry", "Employer", "Outbox", "ApiKey", "Setting",
+    "AuditEntry", "Employer", "Outbox", "ApiKey", "Setting", "MatchingPair",
 ]
