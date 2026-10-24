@@ -1,14 +1,16 @@
 """Upload endpoints — institution upload pipeline."""
+import asyncio
 import hashlib
 import io
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from app.core import events as event_bus
 from app.core.clock import app_now
 from app.core.database import get_db
 from app.core.security import require_roles
@@ -84,6 +86,14 @@ async def upload_students(
         uploader_id=user.get("user_id", "unknown"),
         demo_date=demo_d,
     )
+
+    asyncio.create_task(event_bus.publish({
+        "type": "upload_finished",
+        "institution_id": institution_id,
+        "institution_name": inst.name,
+        "rows_accepted": summary.get("rows_accepted", 0),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }))
 
     return {
         "upload_id": upload.id,

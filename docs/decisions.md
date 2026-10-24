@@ -164,6 +164,16 @@ visible, causing `IntegrityError`. The flush pattern ensures correct insert orde
 
 ---
 
+### D17. SSE uses in-memory subscriber list — single-worker only
+
+**Decision:** The SSE stream (`GET /stream`) uses a module-level `list[asyncio.Queue]` in `app/core/events.py`. Each connected client gets its own queue. Events published by upload/flag endpoints are pushed to all queues.
+
+**Rationale:** SQLite dev is single-worker uvicorn. The in-process queue is zero-dependency and sufficient for the demo.
+
+**If multi-worker:** Replace with Redis pub/sub or a message broker (Phase 10 extra, D17).
+
+---
+
 ### D10. ApiKey table reused for institution keys
 
 **Decision:** The `api_key` table (designed for employer API keys) is reused for
