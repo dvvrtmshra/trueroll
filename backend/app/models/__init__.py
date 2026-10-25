@@ -24,6 +24,7 @@ from app.models.setting import Setting
 from app.models.matching_pair import MatchingPair
 from app.models.share_code import ShareCode
 from app.models.verification_event import VerificationEvent
+from app.models.anomaly_label import AnomalyLabel
 
 __all__ = [
     "Base",
@@ -32,5 +33,5 @@ __all__ = [
     "Flag", "FlagEvent", "ReviewPriority", "DuplicateCase",
     "Upload", "UploadError", "Consent", "Credential", "VerificationLog",
     "AuditEntry", "Employer", "Outbox", "ApiKey", "Setting", "MatchingPair",
-    "ShareCode", "VerificationEvent",
+    "ShareCode", "VerificationEvent", "AnomalyLabel",
 ]

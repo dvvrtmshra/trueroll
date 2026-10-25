@@ -13,10 +13,12 @@ const officerNav: NavItem[] = [
   { label: "Dashboard", to: "/" },
   { label: "Seat-Ledger", to: "/ledger" },
   { label: "Flags", to: "/flags" },
+  { label: "Review priorities", to: "/priorities" },
   { label: "Institutions", to: "/institutions" },
   { label: "Identity & Duplicates", to: "/identity" },
   { label: "Reports", to: "/reports" },
   { label: "Rules", to: "/rules" },
+  { label: "Model evaluation", to: "/model-eval" },
   { label: "My Activity", to: "/my-activity" },
   { label: "Mock Mail", to: "/mock-mail" },
 ];

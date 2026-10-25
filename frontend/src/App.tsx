@@ -9,6 +9,9 @@ import LedgerPage from "./pages/officer/LedgerPage";
 import OfficerFlagsPage from "./pages/officer/FlagsPage";
 import FlagDetailPage from "./pages/officer/FlagDetailPage";
 import InstitutionDetailPage from "./pages/officer/InstitutionDetailPage";
+import PrioritiesPage from "./pages/officer/PrioritiesPage";
+import PriorityDetailPage from "./pages/officer/PriorityDetailPage";
+import ModelEvalPage from "./pages/officer/ModelEvalPage";
 
 // College pages
 import CollegeDashboardPage from "./pages/college/DashboardPage";
@@ -75,6 +78,9 @@ function RoleRouter() {
         <Route path="flags" element={<OfficerFlagsPage />} />
         <Route path="flags/:flagId" element={<FlagDetailPage />} />
         <Route path="institutions/:id" element={<InstitutionDetailPage />} />
+        <Route path="priorities" element={<PrioritiesPage />} />
+        <Route path="priorities/:id" element={<PriorityDetailPage />} />
+        <Route path="model-eval" element={<ModelEvalPage />} />
         <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
       </Routes>
     );
