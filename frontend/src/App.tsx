@@ -2,11 +2,23 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/auth";
 import SampleDataRibbon from "./components/SampleDataRibbon";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/officer/DashboardPage";
+
+// Officer pages
+import OfficerDashboardPage from "./pages/officer/DashboardPage";
 import LedgerPage from "./pages/officer/LedgerPage";
-import FlagsPage from "./pages/officer/FlagsPage";
+import OfficerFlagsPage from "./pages/officer/FlagsPage";
 import FlagDetailPage from "./pages/officer/FlagDetailPage";
 import InstitutionDetailPage from "./pages/officer/InstitutionDetailPage";
+
+// College pages
+import CollegeDashboardPage from "./pages/college/DashboardPage";
+import UploadWizardPage from "./pages/college/UploadWizardPage";
+import MySeatsPage from "./pages/college/MySeatsPage";
+import StudentsPage from "./pages/college/StudentsPage";
+import CollegeFlagsPage from "./pages/college/FlagsPage";
+import ApiPage from "./pages/college/ApiPage";
+import MockMailPage from "./pages/college/MockMailPage";
+import HelpPage from "./pages/college/HelpPage";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -33,11 +45,27 @@ function RoleRouter() {
   if (role === "NATIONAL_OFFICER" || role === "REGIONAL_OFFICER" || role === "SYSTEM_ADMIN") {
     return (
       <Routes>
-        <Route index element={<DashboardPage />} />
+        <Route index element={<OfficerDashboardPage />} />
         <Route path="ledger" element={<LedgerPage />} />
-        <Route path="flags" element={<FlagsPage />} />
+        <Route path="flags" element={<OfficerFlagsPage />} />
         <Route path="flags/:flagId" element={<FlagDetailPage />} />
         <Route path="institutions/:id" element={<InstitutionDetailPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
+  if (role === "COLLEGE_ADMIN") {
+    return (
+      <Routes>
+        <Route index element={<CollegeDashboardPage />} />
+        <Route path="upload" element={<UploadWizardPage />} />
+        <Route path="seats" element={<MySeatsPage />} />
+        <Route path="students" element={<StudentsPage />} />
+        <Route path="flags" element={<CollegeFlagsPage />} />
+        <Route path="api" element={<ApiPage />} />
+        <Route path="mail" element={<MockMailPage />} />
+        <Route path="help" element={<HelpPage />} />
         <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
       </Routes>
     );

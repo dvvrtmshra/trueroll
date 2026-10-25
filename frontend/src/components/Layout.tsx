@@ -7,7 +7,6 @@ import api from "../lib/api";
 interface NavItem {
   label: string;
   to: string;
-  icon?: string;
 }
 
 const officerNav: NavItem[] = [
@@ -20,6 +19,18 @@ const officerNav: NavItem[] = [
   { label: "Rules", to: "/rules" },
   { label: "My Activity", to: "/my-activity" },
   { label: "Mock Mail", to: "/mock-mail" },
+];
+
+const collegeNav: NavItem[] = [
+  { label: "Dashboard", to: "/" },
+  { label: "Upload", to: "/upload" },
+  { label: "My Seats", to: "/seats" },
+  { label: "Students", to: "/students" },
+  { label: "Flags", to: "/flags" },
+  { label: "Certificates", to: "/certificates" },
+  { label: "API", to: "/api" },
+  { label: "Mock Mail", to: "/mail" },
+  { label: "Help", to: "/help" },
 ];
 
 interface LayoutProps {
@@ -41,7 +52,9 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
 
   const role = (user as Record<string, unknown>)?.role as string | undefined;
   const region = (user as Record<string, unknown>)?.region as string | undefined;
-  const navItems = officerNav;
+
+  const navItems =
+    role === "COLLEGE_ADMIN" ? collegeNav : officerNav;
 
   function handleLogout() {
     logout();
@@ -103,7 +116,7 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-[#0B2545]">
               {role === "NATIONAL_OFFICER" && "AICTE National Officer"}
-              {role === "REGIONAL_OFFICER" && `AICTE Regional Officer`}
+              {role === "REGIONAL_OFFICER" && "AICTE Regional Officer"}
               {role === "COLLEGE_ADMIN" && "College Admin"}
               {role === "RULES_OWNER" && "Rules Owner"}
               {role === "SYSTEM_ADMIN" && "System Admin"}
@@ -128,10 +141,7 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
                 </span>
               </span>
             )}
-            <Link
-              to="/login"
-              className="text-xs text-blue-600 hover:underline"
-            >
+            <Link to="/login" className="text-xs text-blue-600 hover:underline">
               Switch role
             </Link>
           </div>

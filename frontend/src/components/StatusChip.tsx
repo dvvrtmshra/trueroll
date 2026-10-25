@@ -14,6 +14,7 @@ const map: Record<string, string> = {
   resolved: "bg-green-100 text-green-800",
   escalated: "bg-purple-100 text-purple-800",
   auto_cleared: "bg-gray-100 text-gray-600",
+  clarification_replied: "bg-indigo-100 text-indigo-800",
   OK: "bg-green-100 text-green-800",
   ALARM: "bg-red-100 text-red-800",
   FLAG: "bg-red-100 text-red-800",
@@ -31,6 +32,7 @@ const labels: Record<string, string> = {
   FLAG: "FLAG",
   RULE_NOT_CONFIRMED: "Rule unconfirmed",
   NOT_EVALUATED: "Not evaluated",
+  clarification_replied: "Reply sent",
 };
 
 export default function StatusChip({ status, count }: StatusChipProps) {
