@@ -29,6 +29,22 @@ import TestsPage from "./pages/rules/TestsPage";
 import ChangelogPage from "./pages/rules/ChangelogPage";
 import UnconfirmedWatchPage from "./pages/rules/UnconfirmedWatchPage";
 
+// Student pages
+import MyRecordPage from "./pages/student/MyRecordPage";
+import IdentityPage from "./pages/student/IdentityPage";
+import ConsentPage from "./pages/student/ConsentPage";
+import AccessLogPage from "./pages/student/AccessLogPage";
+import CertificatesPage from "./pages/student/CertificatesPage";
+import DataPrivacyPage from "./pages/student/DataPrivacyPage";
+
+// Employer pages
+import VerifyPage from "./pages/employer/VerifyPage";
+import MyChecksPage from "./pages/employer/MyChecksPage";
+import OrganisationPage from "./pages/employer/OrganisationPage";
+
+// Public pages
+import PublicVerifyPage from "./pages/public/PublicVerifyPage";
+
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
@@ -96,6 +112,32 @@ function RoleRouter() {
     );
   }
 
+  if (role === "STUDENT") {
+    return (
+      <Routes>
+        <Route index element={<MyRecordPage />} />
+        <Route path="identity" element={<IdentityPage />} />
+        <Route path="consent" element={<ConsentPage />} />
+        <Route path="access-log" element={<AccessLogPage />} />
+        <Route path="certificates" element={<CertificatesPage />} />
+        <Route path="privacy" element={<DataPrivacyPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
+  if (role === "EMPLOYER") {
+    return (
+      <Routes>
+        <Route index element={<VerifyPage />} />
+        <Route path="verify" element={<VerifyPage />} />
+        <Route path="my-checks" element={<MyChecksPage />} />
+        <Route path="organisation" element={<OrganisationPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
   return <PlaceholderPage title={`${role ?? "User"} screens coming soon`} />;
 }
 
@@ -105,6 +147,7 @@ export default function App() {
       <SampleDataRibbon />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/v/:code" element={<PublicVerifyPage />} />
         <Route
           path="/*"
           element={

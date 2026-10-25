@@ -42,6 +42,21 @@ const collegeNav: NavItem[] = [
   { label: "Help", to: "/help" },
 ];
 
+const studentNav: NavItem[] = [
+  { label: "My Record", to: "/" },
+  { label: "Identity", to: "/identity" },
+  { label: "Consent", to: "/consent" },
+  { label: "Access Log", to: "/access-log" },
+  { label: "Certificates", to: "/certificates" },
+  { label: "Data & Privacy", to: "/privacy" },
+];
+
+const employerNav: NavItem[] = [
+  { label: "Verify Student", to: "/" },
+  { label: "My Verifications", to: "/my-checks" },
+  { label: "Organisation", to: "/organisation" },
+];
+
 interface LayoutProps {
   children: React.ReactNode;
   unreadCount?: number;
@@ -65,6 +80,8 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
   const navItems =
     role === "COLLEGE_ADMIN" ? collegeNav
     : (role === "RULES_OWNER" || role === "RULES_APPROVER") ? rulesNav
+    : role === "STUDENT" ? studentNav
+    : role === "EMPLOYER" ? employerNav
     : officerNav;
 
   function handleLogout() {
@@ -131,6 +148,8 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
               {role === "COLLEGE_ADMIN" && "College Admin"}
               {role === "RULES_OWNER" && "Rules Owner"}
               {role === "SYSTEM_ADMIN" && "System Admin"}
+              {role === "STUDENT" && "Student Portal"}
+              {role === "EMPLOYER" && "Employer Portal"}
             </span>
             {region && (
               <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-medium">

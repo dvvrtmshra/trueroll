@@ -9,10 +9,13 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import require_roles
+from app.core.security import get_current_user, require_roles
 from app.models.admission_event import AdmissionEvent
+from app.models.audit_entry import AuditEntry
 from app.models.course import CourseApproval
+from app.models.institution import Institution
 from app.models.student import Student
+from app.models.user import User
 from app.services.ledger import reconcile
 
 router = APIRouter()
@@ -262,3 +265,65 @@ def update_apaar(
         "identity_tier": s.identity_tier,
         "registry_result": registry_result,
     }
+
+
+@router.get("/me")
+def get_my_record(
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_roles("STUDENT")),
+):
+    uid = db.query(User).filter(User.id == user["sub"]).first()
+    if not uid or not uid.student_id:
+        raise HTTPException(status_code=404, detail="No student record linked")
+    s = db.query(Student).filter(Student.id == uid.student_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    ev = db.query(AdmissionEvent).filter(
+        AdmissionEvent.student_id == s.id,
+        AdmissionEvent.event_type == "ADMIT",
+    ).order_by(AdmissionEvent.event_time.desc()).first()
+    course = db.query(CourseApproval).filter(CourseApproval.id == ev.course_approval_id).first() if ev else None
+    inst = db.query(Institution).filter(Institution.id == course.institution_id).first() if course else None
+    withdraw_ev = db.query(AdmissionEvent).filter(
+        AdmissionEvent.student_id == s.id,
+        AdmissionEvent.event_type == "WITHDRAW",
+    ).first()
+
+    return {
+        "id": s.id,
+        "full_name": s.full_name,
+        "apaar_last4": s.apaar_id[-4:] if s.apaar_id and len(s.apaar_id) >= 4 else None,
+        "identity_tier": s.identity_tier,
+        "institution_name": inst.name if inst else None,
+        "institution_id": inst.id if inst else None,
+        "programme": course.name if course else None,
+        "course_id": course.id if course else None,
+        "status": "withdrawn" if withdraw_ev else "enrolled",
+        "enrolled_period": f"{ev.event_time.year}-{ev.event_time.year + 4}" if ev else None,
+    }
+
+
+@router.get("/me/access-log")
+def get_my_access_log(
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_roles("STUDENT")),
+):
+    uid = db.query(User).filter(User.id == user["sub"]).first()
+    if not uid or not uid.student_id:
+        return []
+    student_id = uid.student_id
+    entries = db.query(AuditEntry).filter(
+        AuditEntry.object_id == student_id,
+    ).order_by(AuditEntry.time.desc()).limit(50).all()
+    return [
+        {
+            "id": e.id,
+            "time": e.time.isoformat() if e.time else None,
+            "actor": e.actor,
+            "role": e.actor_role,
+            "action": e.action,
+            "object_type": e.object_type,
+        }
+        for e in entries
+    ]

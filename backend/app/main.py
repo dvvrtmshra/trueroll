@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine
 from app.models import Base
-from app.api import auth, institutions, students, admissions, rules, flags, credentials, reports, verification, audit, employers, admin, evaluations, uploads, simulator, matching, ledger, stream, activity, dashboard
+from app.api import auth, institutions, students, admissions, rules, flags, credentials, reports, verification, audit, employers, admin, evaluations, uploads, simulator, matching, ledger, stream, activity, dashboard, consents, public_verify
 
 
 @asynccontextmanager
@@ -49,6 +49,8 @@ app.include_router(ledger.router, prefix="/ledger", tags=["ledger"])
 app.include_router(stream.router, prefix="/stream", tags=["stream"])
 app.include_router(activity.router, prefix="/activity", tags=["activity"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
+app.include_router(consents.router, prefix="/consents", tags=["consents"])
+app.include_router(public_verify.router, prefix="/v", tags=["public"])
 
 
 @app.get("/health")
