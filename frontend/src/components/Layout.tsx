@@ -21,6 +21,15 @@ const officerNav: NavItem[] = [
   { label: "Mock Mail", to: "/mock-mail" },
 ];
 
+const rulesNav: NavItem[] = [
+  { label: "Rule book", to: "/rules" },
+  { label: "Propose", to: "/propose" },
+  { label: "Approvals", to: "/approvals" },
+  { label: "Tests & backtest", to: "/tests" },
+  { label: "Changelog", to: "/changelog" },
+  { label: "Unconfirmed watch", to: "/unconfirmed" },
+];
+
 const collegeNav: NavItem[] = [
   { label: "Dashboard", to: "/" },
   { label: "Upload", to: "/upload" },
@@ -54,7 +63,9 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
   const region = (user as Record<string, unknown>)?.region as string | undefined;
 
   const navItems =
-    role === "COLLEGE_ADMIN" ? collegeNav : officerNav;
+    role === "COLLEGE_ADMIN" ? collegeNav
+    : (role === "RULES_OWNER" || role === "RULES_APPROVER") ? rulesNav
+    : officerNav;
 
   function handleLogout() {
     logout();

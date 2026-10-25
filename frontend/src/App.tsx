@@ -20,6 +20,15 @@ import ApiPage from "./pages/college/ApiPage";
 import MockMailPage from "./pages/college/MockMailPage";
 import HelpPage from "./pages/college/HelpPage";
 
+// Rules Owner pages
+import RuleBookPage from "./pages/rules/RuleBookPage";
+import RuleDetailPage from "./pages/rules/RuleDetailPage";
+import ProposePage from "./pages/rules/ProposePage";
+import ApprovalsPage from "./pages/rules/ApprovalsPage";
+import TestsPage from "./pages/rules/TestsPage";
+import ChangelogPage from "./pages/rules/ChangelogPage";
+import UnconfirmedWatchPage from "./pages/rules/UnconfirmedWatchPage";
+
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
@@ -66,6 +75,22 @@ function RoleRouter() {
         <Route path="api" element={<ApiPage />} />
         <Route path="mail" element={<MockMailPage />} />
         <Route path="help" element={<HelpPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
+  if (role === "RULES_OWNER" || role === "RULES_APPROVER") {
+    return (
+      <Routes>
+        <Route index element={<RuleBookPage />} />
+        <Route path="rules" element={<RuleBookPage />} />
+        <Route path="rules/:ruleId/versions/:version" element={<RuleDetailPage />} />
+        <Route path="propose" element={<ProposePage />} />
+        <Route path="approvals" element={<ApprovalsPage />} />
+        <Route path="tests" element={<TestsPage />} />
+        <Route path="changelog" element={<ChangelogPage />} />
+        <Route path="unconfirmed" element={<UnconfirmedWatchPage />} />
         <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
       </Routes>
     );

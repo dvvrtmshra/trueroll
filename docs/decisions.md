@@ -182,3 +182,25 @@ institution API keys in Phase 1, setting `employer_id = "system"` as a sentinel.
 **Rationale:** Phase 1 only needs the key hash stored; a separate table was not worth
 adding. In Phase 3 (ingestion), if a cleaner separation is needed, a dedicated
 `institution_api_key` column on the `Institution` model can be added.
+
+---
+
+## Phase 6 — Rules Owner screens
+
+### D18. Regression test runner uses isolated in-memory SQLite
+
+**Decision:** `POST /rules/tests/run` creates a fresh SQLite `:memory:` database per test scenario rather than running against the production DB.
+
+**Rationale:** Regression tests write admission events and rules that would pollute production data. An isolated session guarantees reproducibility without cleanup.
+
+### D19. POST /admin/clock/advance available to RULES_OWNER (not SYSTEM_ADMIN only)
+
+**Decision:** The demo clock advance endpoint accepts both SYSTEM_ADMIN and RULES_OWNER roles.
+
+**Rationale:** The activation demo (spec R6) requires the Rules Owner to advance the clock to the rule's effective_from date. Restricting it to SYSTEM_ADMIN would require role-switching mid-demo.
+
+### D20. Reject endpoint allows RULES_OWNER and RULES_APPROVER
+
+**Decision:** Both proposer-roles and approver-roles can reject a rule pending review. Proposer cannot reject their own rule (same guard as approve).
+
+**Rationale:** Spec says "second approver sees Approve and Reject". The proposer seeing their own rule disabled is enforced client-side (button disabled) and server-side (proposer email check).
