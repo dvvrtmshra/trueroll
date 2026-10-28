@@ -11,53 +11,76 @@ TrueRoll is a working web application that checks college admissions rule-by-rul
 
 ## How to run it (local, ~5 minutes from scratch)
 
-You need **Python 3.11+** and **Node.js 18+** installed. Nothing else.
+You need **Python 3.11+** and **Node.js 18+**. Nothing else.
 
-### Step 1 — Backend
+---
 
-```bash
+### Windows (PowerShell) — use `run.ps1`
+
+```powershell
+# 1. Activate your virtual environment first
 cd backend
-
-# Create a virtual environment
 python -m venv .venv
-
-# Activate it
-# Windows:
 .venv\Scripts\activate
-# Mac/Linux:
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy the default config (SQLite, no passwords needed)
 cd ..
-cp .env.example .env
 
-# Create the database and load all demo data
-make seed
+# 2. Install everything
+.\run.ps1 install
 
-# Start the backend server
-make run-backend
-# → http://localhost:8000
-# → http://localhost:8000/docs  (interactive API explorer)
-```
+# 3. Copy config (SQLite — no passwords needed)
+copy .env.example .env
 
-### Step 2 — Frontend (new terminal)
+# 4. Create database and load all demo data
+.\run.ps1 seed
 
-```bash
-cd frontend
-npm install
-```
+# 5. Start the backend (keep this terminal open)
+.\run.ps1 run-backend
+#  → http://localhost:8000
+#  → http://localhost:8000/docs  (API explorer)
 
-Back in the repo root:
-
-```bash
-make run-frontend
-# → http://localhost:5173
+# 6. Open a NEW terminal, activate .venv again, then:
+.\run.ps1 run-frontend
+#  → http://localhost:5173
 ```
 
 Open **http://localhost:5173** in your browser. Done.
+
+---
+
+### Mac / Linux — use `make`
+
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cd ..
+cp .env.example .env
+make seed
+make run-backend        # keep open
+# new terminal:
+make run-frontend       # http://localhost:5173
+```
+
+---
+
+### Direct commands (any OS, no make/script needed)
+
+```bash
+# Seed
+cd backend && python -m scripts.init_db
+
+# Backend
+cd backend && uvicorn app.main:app --reload --port 8000
+
+# Frontend
+cd frontend && npm install && npm run dev
+
+# Tests
+cd backend && python -m pytest tests/ -v
+
+# Reset demo
+cd backend && python -m scripts.init_db --reset
+```
 
 ---
 
@@ -206,8 +229,11 @@ S1 Lawful 276 · S2 Domestic in extra seats · S3 Over maximum · S4 Unconfirmed
 
 ## Troubleshooting
 
-**`make seed` fails with "no module named app"**
-→ Make sure your virtual environment is activated before running `make seed`.
+**`make` is not recognised (Windows)**
+→ Use `.\run.ps1 seed`, `.\run.ps1 run-backend` etc. instead of `make`. See the Windows section above.
+
+**`make seed` / `.\run.ps1 seed` fails with "no module named app"**
+→ Make sure your virtual environment is activated (`cd backend && .venv\Scripts\activate`) before seeding.
 
 **Port 8000 already in use**
 → `lsof -i :8000` (Mac/Linux) or `netstat -ano | findstr 8000` (Windows), then kill the process.
