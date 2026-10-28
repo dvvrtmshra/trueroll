@@ -204,3 +204,31 @@ adding. In Phase 3 (ingestion), if a cleaner separation is needed, a dedicated
 **Decision:** Both proposer-roles and approver-roles can reject a rule pending review. Proposer cannot reject their own rule (same guard as approve).
 
 **Rationale:** Spec says "second approver sees Approve and Reject". The proposer seeing their own rule disabled is enforced client-side (button disabled) and server-side (proposer email check).
+
+---
+
+## Phase 9 — Reports, Auditor, Admin
+
+### D21. CORRECTION events: re-upload with changed seat_category
+
+**Decision:** When the same student_ref is re-uploaded with a different `seat_category`, a `CORRECTION` event is written (not a second `ADMIT`). The `_active_events` function uses the most recent ADMIT/CORRECTION event per student, so bucket counts always reflect the corrected category.
+
+**Rationale:** Spec S21 requires CORRECTION events, "counters change accordingly", and reconcile proves zero drift.
+
+### D22. LATERAL admission cap from lateral_intake
+
+**Decision:** LATERAL seat_category admissions are checked against `CourseApproval.lateral_intake`. If `lateral_intake = 0` and LATERAL admissions are present, the result is `RULE_NOT_CONFIRMED`. If `lateral_intake > 0`, the cap is applied as C1.
+
+**Rationale:** Spec S22: lateral entry counts against `lateral_intake`, "or the course returns RULE_NOT_CONFIRMED if none exists". No rule-table entry is needed for lateral since the cap is on the course record.
+
+### D23. Tamper demo uses direct SQL UPDATE
+
+**Decision:** The `/admin/tamper` endpoint uses raw `sqlalchemy.text(UPDATE …)` to corrupt an audit entry hash, bypassing the ORM and any app-layer checks. This is behind SYSTEM_ADMIN role and clearly labelled "Prototype demonstration only".
+
+**Rationale:** Spec requires "changes one stored row directly in the database". In SQLite there is no separate DB-user permission, so the role gate is the only enforcement. Production would use a separate privileged connection, but that is out of scope for the prototype.
+
+### D24. `make evaluate` runs anomaly eval then master eval
+
+**Decision:** `make evaluate` runs `scripts.evaluate_anomaly` then `scripts.evaluate` in sequence. The anomaly eval writes `models/anomaly_eval.json`; the master eval reads it and also writes `models/evaluation_summary.json`.
+
+**Rationale:** S24 requires both files; separating the two scripts keeps each focused.

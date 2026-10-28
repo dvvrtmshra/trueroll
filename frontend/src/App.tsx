@@ -45,6 +45,15 @@ import VerifyPage from "./pages/employer/VerifyPage";
 import MyChecksPage from "./pages/employer/MyChecksPage";
 import OrganisationPage from "./pages/employer/OrganisationPage";
 
+// Officer/Reports pages
+import ReportsPage from "./pages/officer/ReportsPage";
+
+// Auditor pages
+import AuditTrailPage from "./pages/auditor/AuditTrailPage";
+
+// Admin pages
+import AdminPage from "./pages/admin/AdminPage";
+
 // Public pages
 import PublicVerifyPage from "./pages/public/PublicVerifyPage";
 
@@ -70,7 +79,7 @@ function RoleRouter() {
   const user = useAuthStore((s) => s.user) as Record<string, unknown> | null;
   const role = user?.role as string | undefined;
 
-  if (role === "NATIONAL_OFFICER" || role === "REGIONAL_OFFICER" || role === "SYSTEM_ADMIN") {
+  if (role === "NATIONAL_OFFICER" || role === "REGIONAL_OFFICER") {
     return (
       <Routes>
         <Route index element={<OfficerDashboardPage />} />
@@ -78,6 +87,32 @@ function RoleRouter() {
         <Route path="flags" element={<OfficerFlagsPage />} />
         <Route path="flags/:flagId" element={<FlagDetailPage />} />
         <Route path="institutions/:id" element={<InstitutionDetailPage />} />
+        <Route path="priorities" element={<PrioritiesPage />} />
+        <Route path="priorities/:id" element={<PriorityDetailPage />} />
+        <Route path="model-eval" element={<ModelEvalPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+        <Route path="audit" element={<AuditTrailPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
+  if (role === "AUDITOR") {
+    return (
+      <Routes>
+        <Route index element={<AuditTrailPage />} />
+        <Route path="*" element={<PlaceholderPage title="Coming soon" />} />
+      </Routes>
+    );
+  }
+
+  if (role === "SYSTEM_ADMIN") {
+    return (
+      <Routes>
+        <Route index element={<OfficerDashboardPage />} />
+        <Route path="admin" element={<AdminPage />} />
+        <Route path="audit" element={<AuditTrailPage />} />
+        <Route path="reports" element={<ReportsPage />} />
         <Route path="priorities" element={<PrioritiesPage />} />
         <Route path="priorities/:id" element={<PriorityDetailPage />} />
         <Route path="model-eval" element={<ModelEvalPage />} />

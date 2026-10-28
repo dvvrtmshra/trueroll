@@ -297,10 +297,30 @@ def process_upload(
         existing_admit = db.query(AdmissionEvent).filter(
             AdmissionEvent.student_id == student_id,
             AdmissionEvent.course_approval_id == course.id,
-            AdmissionEvent.event_type == "ADMIT",
-        ).first()
+            AdmissionEvent.event_type.in_(["ADMIT", "CORRECTION"]),
+        ).order_by(AdmissionEvent.event_time.desc()).first()
 
-        if not existing_admit:
+        if existing_admit and existing_admit.seat_category != seat_cat:
+            # Same student re-uploaded with a different seat_category → CORRECTION event
+            corr_ev = AdmissionEvent(
+                id=str(uuid4()),
+                student_id=student_id,
+                course_approval_id=course.id,
+                seat_category=seat_cat,
+                event_type="CORRECTION",
+                admission_round=admission_round,
+                entry_type=entry_type,
+                nationality_status=_nationality_status(row),
+                event_time=datetime(
+                    admission_date.year, admission_date.month, admission_date.day,
+                    9, 0, 0, tzinfo=timezone.utc,
+                ),
+                upload_id=upload_id,
+            )
+            db.add(corr_ev)
+            courses_affected.add(course.id)
+            accepted += 1
+        elif not existing_admit:
             # Duplicate detection against all existing DB students
             for other in existing_students:
                 if other.id == student_id:

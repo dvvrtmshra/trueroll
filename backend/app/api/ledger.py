@@ -211,6 +211,23 @@ def compare_ledger(
     }
 
 
+@router.get("/course/{course_id}/reconcile")
+def reconcile_course(
+    course_id: str,
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_roles(*_OFFICER_ROLES, "COLLEGE_ADMIN")),
+):
+    """Recompute seat counts from event history. Returns per-bucket drift (0 = clean)."""
+    from fastapi import HTTPException
+    from app.services.ledger import reconcile
+    course = db.query(CourseApproval).filter(CourseApproval.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    drift = reconcile(db, course_id)
+    total_drift = sum(abs(v) for v in drift.values())
+    return {"course_id": course_id, "drift": drift, "total_drift": total_drift, "clean": total_drift == 0}
+
+
 @router.get("/course/{course_id}")
 def get_course_ledger(
     course_id: str,

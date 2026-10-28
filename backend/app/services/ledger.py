@@ -105,17 +105,17 @@ def lawful_max(eff_caps: dict[str, int]) -> int:
 # ── Event queries ─────────────────────────────────────────────────────────────
 
 def _active_events(db: Session, course_id: str):
-    """Events where event_type=ADMIT and no subsequent WITHDRAW for same student+course."""
+    """Events where event_type=ADMIT/CORRECTION and no subsequent WITHDRAW for same student+course."""
     all_events = (
         db.query(AdmissionEvent)
         .filter(AdmissionEvent.course_approval_id == course_id)
         .order_by(AdmissionEvent.event_time)
         .all()
     )
-    # Net: track admitted students; WITHDRAW cancels an ADMIT
+    # Net: track admitted students; WITHDRAW cancels; CORRECTION updates seat_category
     admitted: dict[str, AdmissionEvent] = {}
     for ev in all_events:
-        if ev.event_type == "ADMIT":
+        if ev.event_type in ("ADMIT", "CORRECTION"):
             admitted[ev.student_id] = ev
         elif ev.event_type in ("WITHDRAW", "TRANSFER_OUT"):
             admitted.pop(ev.student_id, None)
@@ -170,6 +170,20 @@ def evaluate(
         bucket = BUCKET_FOR_CATEGORY.get(ev.seat_category, ev.seat_category)
         occupied.setdefault(bucket, []).append(ev)
 
+    # LATERAL check: if any LATERAL admissions exist, lateral_intake must be > 0
+    if "LATERAL" in occupied and course.lateral_intake == 0:
+        reason = "Rule not confirmed: lateral_intake not set for this course (LATERAL admissions present)"
+        result = EvalResult(
+            status="RULE_NOT_CONFIRMED",
+            course_id=course_id,
+            rule_set_hash=rs_hash,
+            rule_versions_used=rv_ids,
+            flags=[],
+            review_reason=reason,
+        )
+        _persist(db, course_id, result)
+        return result
+
     # RULE_NOT_CONFIRMED check: any occupied rule-required bucket without active rule?
     missing_rule_buckets = [
         b for b in occupied
@@ -194,6 +208,9 @@ def evaluate(
 
     counts = {b: len(evs) for b, evs in occupied.items()}
     caps = compute_caps(course.approved_intake, active_rules)
+    # LATERAL bucket cap comes from lateral_intake on the course record
+    if "LATERAL" in occupied and course.lateral_intake > 0:
+        caps["LATERAL"] = course.lateral_intake
     eff_caps = apply_reversion(caps, counts)
     lmax = lawful_max(eff_caps)
 

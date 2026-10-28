@@ -23,6 +23,22 @@ const officerNav: NavItem[] = [
   { label: "Mock Mail", to: "/mock-mail" },
 ];
 
+const auditorNav: NavItem[] = [
+  { label: "Audit trail", to: "/" },
+  { label: "Access log", to: "/access-log" },
+  { label: "Rule history", to: "/rule-history" },
+  { label: "Exports", to: "/exports" },
+];
+
+const adminNav: NavItem[] = [
+  { label: "Dashboard", to: "/" },
+  { label: "System Admin", to: "/admin" },
+  { label: "Audit trail", to: "/audit" },
+  { label: "Reports", to: "/reports" },
+  { label: "Review priorities", to: "/priorities" },
+  { label: "Model evaluation", to: "/model-eval" },
+];
+
 const rulesNav: NavItem[] = [
   { label: "Rule book", to: "/rules" },
   { label: "Propose", to: "/propose" },
@@ -84,6 +100,8 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
     : (role === "RULES_OWNER" || role === "RULES_APPROVER") ? rulesNav
     : role === "STUDENT" ? studentNav
     : role === "EMPLOYER" ? employerNav
+    : role === "AUDITOR" ? auditorNav
+    : role === "SYSTEM_ADMIN" ? adminNav
     : officerNav;
 
   function handleLogout() {
@@ -149,9 +167,11 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
               {role === "REGIONAL_OFFICER" && "AICTE Regional Officer"}
               {role === "COLLEGE_ADMIN" && "College Admin"}
               {role === "RULES_OWNER" && "Rules Owner"}
+              {role === "RULES_APPROVER" && "Rules Approver"}
               {role === "SYSTEM_ADMIN" && "System Admin"}
               {role === "STUDENT" && "Student Portal"}
               {role === "EMPLOYER" && "Employer Portal"}
+              {role === "AUDITOR" && "Auditor"}
             </span>
             {region && (
               <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-medium">

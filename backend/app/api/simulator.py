@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.security import get_current_user
 from app.simulators.registry_sim import verify, start_consent_session
 
 router = APIRouter()
@@ -18,6 +19,38 @@ class VerifyRequest(BaseModel):
 
 class ConsentRequest(BaseModel):
     apaar_id: str
+
+
+class ModeRequest(BaseModel):
+    mode: str  # up | slow | flaky | down
+
+
+@router.post("/mode")
+def set_registry_mode(
+    body: ModeRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    from app.models.setting import Setting
+    allowed = {"up", "slow", "flaky", "down"}
+    mode = body.mode.lower()
+    if mode not in allowed:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail=f"mode must be one of {allowed}")
+    row = db.query(Setting).filter(Setting.key == "registry_mode").first()
+    if row:
+        row.value = mode
+    else:
+        db.add(Setting(key="registry_mode", value=mode))
+    db.commit()
+    return {"registry_mode": mode}
+
+
+@router.get("/mode")
+def get_registry_mode(db: Session = Depends(get_db)):
+    from app.models.setting import Setting
+    row = db.query(Setting).filter(Setting.key == "registry_mode").first()
+    return {"registry_mode": row.value if row else "up"}
 
 
 @router.post("/registry/verify")

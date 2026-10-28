@@ -40,4 +40,4 @@ docker-down:
 # ── Evaluation (Phase 9 — requires Phase 8 anomaly model) ─────────────────────
 
 evaluate:
-	cd backend && python scripts/evaluate_anomaly.py
+	cd backend && python -m scripts.evaluate_anomaly && python -m scripts.evaluate

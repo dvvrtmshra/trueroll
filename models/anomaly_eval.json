@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-10-25T07:29:01.230138+00:00",
+  "model": "robust_baseline + isolation_forest v0.1",
+  "honesty_notice": "Evaluated on synthetic labelled data. Real accuracy requires an AICTE pilot with officer-labelled outcomes.",
+  "overall": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "pr_auc": 0.0,
+    "tp": 0,
+    "fp": 10,
+    "fn": 0,
+    "tn": 12
+  },
+  "by_type": {
+    "LATE_SURGE": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "pr_auc": 0.0,
+      "beats_baseline": false
+    },
+    "CATEGORY_MIX": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "fpr": 0.714,
+      "pr_auc": 0.0,
+      "beats_baseline": false
+    },
+    "SHARED_ATTRIBUTE_CLUSTER": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "pr_auc": 0.0,
+      "beats_baseline": false
+    },
+    "FULL_STREAK": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "pr_auc": 0.0,
+      "beats_baseline": false
+    },
+    "POST_AUDIT_WITHDRAWALS": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "pr_auc": 0.0,
+      "beats_baseline": false
+    }
+  },
+  "baseline": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "pr_auc": 0.0
+  },
+  "precision_at_k": {
+    "k5": 0.0,
+    "k10": 0.0
+  },
+  "threshold": 40,
+  "held_out_n": 22,
+  "train_n": 91,
+  "simulated": true
+}

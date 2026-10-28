@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-10-25T07:30:30.579787+00:00",
+  "note": "Measured on synthetic data in our prototype.",
+  "breaches": {
+    "total_evaluations": 0,
+    "flag_evaluations": 0,
+    "ok_evaluations": 0,
+    "open_flags": 0,
+    "note": "Based on seeded scenario data (S1-S5). Known planted breaches for S2, S3."
+  },
+  "false_alarms": {
+    "extra_seat_courses": 0,
+    "simple_counter_alarms": 0,
+    "seat_ledger_flags": 0,
+    "false_alarm_rate": 0.0,
+    "note": "Simple counter does not know about extra seats; Seat-Ledger does."
+  },
+  "throughput": {
+    "large_uploads_measured": 0,
+    "median_seconds": null,
+    "p95_seconds": null,
+    "note": "Large upload = 1000+ rows. Run G_large_5000.csv scenario for real measurement."
+  },
+  "matching": {
+    "pairs_evaluated": 800,
+    "true_positives": 136,
+    "false_positives": 0,
+    "false_negatives": 264,
+    "true_negatives": 400,
+    "precision": 1.0,
+    "recall": 0.34,
+    "f1": 0.507,
+    "threshold": 0.85,
+    "note": "D4 threshold 0.93, D5 watch 0.85. Nothing auto-flagged."
+  },
+  "anomaly": {
+    "status": "not_run",
+    "note": "Run `python -m scripts.evaluate_anomaly` first."
+  },
+  "reconciliation": {
+    "courses_checked": 214,
+    "total_drift": 0,
+    "clean": true,
+    "note": "Zero drift means event history matches stored counters exactly."
+  }
+}
