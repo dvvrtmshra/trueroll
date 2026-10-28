@@ -301,7 +301,7 @@ def reset_demo(
         from seed.generate_uploads import run as run_uploads
         from seed.generate_matching_pairs import run as run_pairs
         from seed.generate_anomaly_data import run as run_anomaly
-        run_uploads(db)
+        run_uploads()
         run_pairs(db)
         run_anomaly(db)
         return {"reset": True, "message": "Demo data re-seeded. Restart the server for full effect."}

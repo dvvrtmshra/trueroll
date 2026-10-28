@@ -260,3 +260,21 @@ adding. In Phase 3 (ingestion), if a cleaner separation is needed, a dedicated
 **Decision:** The Playwright e2e tests (`frontend/e2e/demo-script.spec.ts`) require both the backend (port 8000) and frontend (port 5173) to be running. `make e2e` does not start them; the developer runs them in separate terminals first.
 
 **Rationale:** Starting dev servers inside the test runner risks port conflicts and complicates CI. The README documents the three-terminal procedure. A GitHub Actions workflow is a section 12 extra.
+
+### D29. `make reset-demo` passes `--reset` to init_db.py to drop and recreate schema
+
+**Decision:** `init_db.py --reset` calls `Base.metadata.drop_all()` before `create_all()`. All seed generators have idempotency guards, so `make seed` is safe to re-run without `--reset`.
+
+**Rationale:** A full clean slate is useful for demo judges who want a reproducible starting state. The `--reset` flag makes the intent explicit.
+
+### D30. Docker Compose frontend maps port 5173:80
+
+**Decision:** The frontend Nginx container listens on port 80 (standard). Docker Compose maps host port 5173 → container port 80 so the app remains accessible at `http://localhost:5173` matching the dev workflow.
+
+**Rationale:** The Dockerfile's multi-stage build serves the Vite dist via Nginx on port 80. Mapping 5173:5173 would silently fail since nothing listens on 5173 inside the container.
+
+### D31. `generate_uploads.run()` takes no DB argument; admin reset-demo fixed
+
+**Decision:** `seed/generate_uploads.py run()` writes CSV files to `seed/uploads/` and does not interact with the database. The admin endpoint previously called `run_uploads(db)`, causing a TypeError at runtime. Fixed to `run_uploads()`.
+
+**Rationale:** Upload CSV files are static demo assets — they don't need a DB session.

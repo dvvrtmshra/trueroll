@@ -1,4 +1,6 @@
-"""Create schema and seed all demo data. Run via: make seed"""
+"""Create schema and seed all demo data. Run via: make seed
+Pass --reset to drop all tables first (full clean slate).
+"""
 import sys
 from pathlib import Path
 
@@ -11,7 +13,10 @@ from app.models import Base
 from app.models.setting import Setting
 
 
-def create_schema() -> None:
+def create_schema(reset: bool = False) -> None:
+    if reset:
+        print("[init_db] Dropping all tables...")
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     print("[init_db] Schema created.")
 
@@ -25,7 +30,8 @@ def seed_settings(db) -> None:
 
 
 def main() -> None:
-    create_schema()
+    reset = "--reset" in sys.argv
+    create_schema(reset=reset)
     db = SessionLocal()
     try:
         seed_settings(db)
@@ -50,6 +56,9 @@ def main() -> None:
 
         from seed import populate_seat_buckets
         populate_seat_buckets.run(db)
+
+        from seed import generate_uploads
+        generate_uploads.run()
 
         from seed import generate_matching_pairs
         generate_matching_pairs.run(db)
