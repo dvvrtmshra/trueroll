@@ -10,7 +10,7 @@ Each is clearly labelled in the UI with a **SIMULATED** chip.
 | M3 | Synthetic student admission records (12,855 students, 2026-27) | No real student data | **Seeded (Phase 1)** — `seed/generate_students.py`, hero scenario data planted |
 | M4 | APAAR / DigiLocker-ABC simulator | No API Setu approval; live access needs registered requester onboarding | **Live (Phase 3)** — `simulators/registry_sim.py`, endpoints at `/sim/registry/verify` and `/sim/registry/consent-session`; modes Up/Slow/Flaky/Down via Setting table key `registry_mode`; APAAR IDs ending in 999 always return UNAVAILABLE |
 | M5 | Sample upload files (CSV/XLSX) in `seed/uploads/` | Needed to demo uploads | **Live (Phase 3)** — `seed/generate_uploads.py` generates A–I and template CSV files |
-| M6 | Anomaly training and evaluation dataset | No labelled anomaly data | Fake data, real model (Phase 8) |
+| M6 | Anomaly training and evaluation dataset | No labelled anomaly data | **Live (Phase 8)** — `seed/generate_anomaly_data.py`, `scripts/evaluate_anomaly.py`; `models/anomaly_eval.json` holds precision/recall on synthetic labels |
 | M7 | Demo users (22 accounts across all roles) and mock OTP (always `123456`) | No real identity provider | **Seeded (Phase 1)** — `seed/generate_users.py`. Real role checks |
 | M8 | Employer organisations (8 fictional) | Demo only | **Seeded (Phase 1)** — `seed/generate_employers.py` |
 | M9 | Mock mail and SMS outbox (table `outbox`) | No real email/SMS delivery | Fake delivery, real message content |

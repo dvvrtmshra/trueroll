@@ -21,69 +21,96 @@ CYCLE_END = date(2026, 11, 30)
 @pytest.fixture()
 def anomaly_db(db):
     """Set up one institution with a planted LATE_SURGE anomaly and several normal peers."""
-    inst = Institution(
-        id="ANOM-INST-01",
-        name="Anomaly Test College",
-        region="West",
-        state="Maharashtra",
-        city="Mumbai",
-        type="Private",
-        status="Open",
-    )
-    db.add(inst)
-
-    # Anomalous course
-    course = CourseApproval(
-        id="ANOM-CRS-01",
-        institution_id="ANOM-INST-01",
-        name="B.Tech CSE",
-        level="UG",
-        domain="Engineering and Technology",
-        academic_year="2026-27",
-        approved_intake=240,
-    )
-    db.add(course)
-    db.flush()
-
-    # 5 normal peers
-    for i in range(5):
-        peer_inst = Institution(
-            id=f"ANOM-PEER-{i:02d}",
-            name=f"Peer College {i}",
+    if not db.query(Institution).filter(Institution.id == "ANOM-INST-01").first():
+        db.add(Institution(
+            id="ANOM-INST-01",
+            name="Anomaly Test College",
             region="West",
             state="Maharashtra",
-            city="Pune",
+            city="Mumbai",
             type="Private",
             status="Open",
-        )
-        db.add(peer_inst)
-        peer_course = CourseApproval(
-            id=f"ANOM-PEER-CRS-{i:02d}",
-            institution_id=f"ANOM-PEER-{i:02d}",
+        ))
+
+    if not db.query(CourseApproval).filter(CourseApproval.id == "ANOM-CRS-01").first():
+        db.add(CourseApproval(
+            id="ANOM-CRS-01",
+            institution_id="ANOM-INST-01",
             name="B.Tech CSE",
             level="UG",
             domain="Engineering and Technology",
             academic_year="2026-27",
             approved_intake=240,
-        )
-        db.add(peer_course)
-        db.flush()
-        # Normal admissions distributed evenly over the year
+        ))
+
+    db.commit()
+
+    # 5 normal peers
+    for i in range(5):
+        if not db.query(Institution).filter(Institution.id == f"ANOM-PEER-{i:02d}").first():
+            db.add(Institution(
+                id=f"ANOM-PEER-{i:02d}",
+                name=f"Peer College {i}",
+                region="West",
+                state="Maharashtra",
+                city="Pune",
+                type="Private",
+                status="Open",
+            ))
+        if not db.query(CourseApproval).filter(CourseApproval.id == f"ANOM-PEER-CRS-{i:02d}").first():
+            db.add(CourseApproval(
+                id=f"ANOM-PEER-CRS-{i:02d}",
+                institution_id=f"ANOM-PEER-{i:02d}",
+                name="B.Tech CSE",
+                level="UG",
+                domain="Engineering and Technology",
+                academic_year="2026-27",
+                approved_intake=240,
+            ))
+        db.commit()
+        # Normal admissions distributed evenly over the year (skip if already seeded)
         for j in range(40):
-            stu = Student(
-                id=f"ANOM-PEER-STU-{i}-{j}",
-                full_name=f"Peer Student {i}-{j}",
-                date_of_birth=date(2003, (j % 12) + 1, 15),
-                identity_tier="T1",
-            )
-            db.add(stu)
+            if not db.query(Student).filter(Student.id == f"ANOM-PEER-STU-{i}-{j}").first():
+                db.add(Student(
+                    id=f"ANOM-PEER-STU-{i}-{j}",
+                    full_name=f"Peer Student {i}-{j}",
+                    date_of_birth=date(2003, (j % 12) + 1, 15),
+                    identity_tier="T1",
+                ))
+                db.flush()
+                day_offset = j * 3  # spread over ~120 days
+                admit_dt = datetime(2026, 7, 1, 10, 0, tzinfo=timezone.utc) + timedelta(days=day_offset)
+                db.add(AdmissionEvent(
+                    id=str(uuid4()),
+                    student_id=f"ANOM-PEER-STU-{i}-{j}",
+                    course_approval_id=f"ANOM-PEER-CRS-{i:02d}",
+                    seat_category="REGULAR",
+                    event_type="ADMIT",
+                    admission_round="ROUND_1",
+                    entry_type="REGULAR",
+                    nationality_status="INDIAN",
+                    event_time=admit_dt,
+                ))
+
+    # Anomalous: 80% of admissions in last 14 days of cycle
+    cutoff = CYCLE_END - timedelta(days=14)
+    for j in range(50):
+        if not db.query(Student).filter(Student.id == f"ANOM-SURGE-STU-{j}").first():
+            db.add(Student(
+                id=f"ANOM-SURGE-STU-{j}",
+                full_name=f"Surge Student {j}",
+                date_of_birth=date(2004, (j % 12) + 1, 10),
+                identity_tier="T3",
+            ))
             db.flush()
-            day_offset = j * 3  # spread over ~120 days
-            admit_dt = datetime(2026, 7, 1, 10, 0, tzinfo=timezone.utc) + timedelta(days=day_offset)
+            if j < 40:  # 80% late
+                admit_dt = datetime(cutoff.year, cutoff.month, cutoff.day, 10, 0, tzinfo=timezone.utc) + timedelta(days=j % 14)
+            else:
+                admit_dt = datetime(2026, 8, j % 28 + 1, 10, 0, tzinfo=timezone.utc)
             db.add(AdmissionEvent(
                 id=str(uuid4()),
-                student_id=stu.id,
-                course_approval_id=peer_course.id,
+                student_id=f"ANOM-SURGE-STU-{j}",
+                course_approval_id="ANOM-CRS-01",
                 seat_category="REGULAR",
                 event_type="ADMIT",
                 admission_round="ROUND_1",
@@ -92,40 +119,18 @@ def anomaly_db(db):
                 event_time=admit_dt,
             ))
 
-    # Anomalous: 80% of admissions in last 14 days of cycle
-    cutoff = CYCLE_END - timedelta(days=14)
-    for j in range(50):
-        stu = Student(
-            id=f"ANOM-SURGE-STU-{j}",
-            full_name=f"Surge Student {j}",
-            date_of_birth=date(2004, (j % 12) + 1, 10),
-            identity_tier="T3",
-        )
-        db.add(stu)
-        db.flush()
-        if j < 40:  # 80% late
-            admit_dt = datetime(cutoff.year, cutoff.month, cutoff.day, 10, 0, tzinfo=timezone.utc) + timedelta(days=j % 14)
-        else:
-            admit_dt = datetime(2026, 8, j % 28 + 1, 10, 0, tzinfo=timezone.utc)
-        db.add(AdmissionEvent(
-            id=str(uuid4()),
-            student_id=stu.id,
-            course_approval_id=course.id,
-            seat_category="REGULAR",
-            event_type="ADMIT",
-            admission_round="ROUND_1",
-            entry_type="REGULAR",
-            nationality_status="INDIAN",
-            event_time=admit_dt,
+    if not db.query(AnomalyLabel).filter(
+        AnomalyLabel.institution_id == "ANOM-INST-01",
+        AnomalyLabel.course_id == "ANOM-CRS-01",
+    ).first():
+        db.add(AnomalyLabel(
+            institution_id="ANOM-INST-01",
+            course_id="ANOM-CRS-01",
+            academic_year="2026-27",
+            anomaly_type="LATE_SURGE",
+            planted=True,
         ))
 
-    db.add(AnomalyLabel(
-        institution_id="ANOM-INST-01",
-        course_id="ANOM-CRS-01",
-        academic_year="2026-27",
-        anomaly_type="LATE_SURGE",
-        planted=True,
-    ))
     db.commit()
     yield db
 

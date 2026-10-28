@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/auth";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
@@ -83,7 +83,12 @@ interface LayoutProps {
 export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => { setMobileMenuOpen(false); }, [location.pathname]);
 
   const { data: clockData } = useQuery<{ demo_date: string }>({
     queryKey: ["demo-clock"],
@@ -111,9 +116,31 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
-      {/* Sidebar */}
+      {/* Skip to main content (accessibility) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 bg-white text-[#0B2545] px-3 py-1 rounded text-sm font-medium border border-[#0B2545]"
+      >
+        Skip to main content
+      </a>
+
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar — hidden on mobile unless mobileMenuOpen, always shown on desktop */}
       <aside
-        className={`${sidebarOpen ? "w-56" : "w-14"} flex-shrink-0 bg-[#0B2545] text-white flex flex-col transition-all duration-200`}
+        className={`${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 fixed md:relative z-40 md:z-auto inset-y-0 left-0 ${
+          sidebarOpen ? "w-56" : "md:w-14 w-56"
+        } flex-shrink-0 bg-[#0B2545] text-white flex flex-col transition-all duration-200`}
+        aria-label="Main navigation"
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
           {sidebarOpen && (
@@ -160,8 +187,19 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
       {/* Main area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white border-b border-[#E2E8F0] px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-white border-b border-[#E2E8F0] px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
+            {/* Hamburger — mobile only */}
+            <button
+              className="md:hidden text-[#0B2545] p-1 rounded focus:outline-none focus:ring-2 focus:ring-[#0B2545]"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open navigation menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
             <span className="text-sm font-semibold text-[#0B2545]">
               {role === "NATIONAL_OFFICER" && "AICTE National Officer"}
               {role === "REGIONAL_OFFICER" && "AICTE Regional Officer"}
@@ -200,7 +238,7 @@ export default function Layout({ children, unreadCount = 0 }: LayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto p-4 md:p-6" tabIndex={-1}>
           {children}
         </main>
       </div>

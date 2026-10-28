@@ -85,8 +85,27 @@ Backend: http://localhost:8000 · Frontend: http://localhost:5173
 | `make test` | Run pytest suite |
 | `make run-backend` | Start FastAPI dev server |
 | `make run-frontend` | Start Vite dev server |
-| `make evaluate` | Run evaluation suite (Phase 9+) |
+| `make evaluate` | Run evaluation suite (anomaly + master summary) |
+| `make e2e` | Run Playwright demo-script tests (requires both servers running) |
+| `make e2e-ui` | Open Playwright UI test runner |
+
+## End-to-end tests (demo script)
+
+The Playwright suite in `frontend/e2e/demo-script.spec.ts` covers all 12 steps of the Section 9 demo:
+
+```bash
+# Terminal 1 — backend
+make run-backend
+
+# Terminal 2 — frontend
+make run-frontend
+
+# Terminal 3 — run e2e
+make e2e
+```
+
+The suite logs into each role, checks key UI text, and tests the full consent lifecycle (create → verify → withdraw → verify again) through the API.
 
 ## Build phases
 
-See `docs/SPEC.md` section 11. Current phase: **0 — Skeleton**.
+See `docs/SPEC.md` section 11. All phases 0–10 complete.

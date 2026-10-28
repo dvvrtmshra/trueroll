@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "../../components/Layout";
 import SimulatedChip from "../../components/SimulatedChip";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorBanner from "../../components/ErrorBanner";
+import EmptyState from "../../components/EmptyState";
 import api from "../../lib/api";
 
 const PURPOSES = ["Internship", "Employment", "Background Check", "Other"];
@@ -39,7 +42,7 @@ export default function ConsentPage() {
   const [created, setCreated] = useState<{ code: string; qr_url: string } | null>(null);
   const [withdrawId, setWithdrawId] = useState<string | null>(null);
 
-  const { data: codes = [] } = useQuery<ShareCode[]>({
+  const { data: codes = [], isLoading: codesLoading, isError: codesError, refetch: refetchCodes } = useQuery<ShareCode[]>({
     queryKey: ["share-codes"],
     queryFn: () => api.get("/consents").then((r) => r.data),
   });
@@ -74,17 +77,34 @@ export default function ConsentPage() {
     <Layout>
       <div className="max-w-md mx-auto mt-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-lg font-bold text-[#0B2545]">Consent Manager</h1>
+          <div>
+            <h1 className="text-lg font-bold text-[#0B2545]">
+              Consent Manager{" "}
+              <span className="text-gray-400 font-normal text-base" lang="hi">सहमति प्रबंधक</span>
+            </h1>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Control who can verify you{" "}
+              <span lang="hi" className="text-gray-400">· आप कौन को सत्यापित कर सकता है</span>
+            </p>
+          </div>
           <SimulatedChip />
         </div>
 
+        {codesLoading && <LoadingSpinner message="Loading consents…" />}
+        {codesError && <ErrorBanner message="Could not load consents." onRetry={refetchCodes} />}
+
         {/* Active consents */}
+        {!codesLoading && !codesError && (
         <section className="bg-white rounded-xl border border-[#E2E8F0] shadow p-4 mb-4">
           <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-3">
-            Who can verify me
+            Who can verify me{" "}
+            <span lang="hi" className="text-gray-400 normal-case">· कौन मुझे सत्यापित कर सकता है</span>
           </p>
           {activeCodes.length === 0 && (
-            <p className="text-sm text-gray-400">No active share codes.</p>
+            <EmptyState
+              title="No active share codes"
+              body="Create one below to let an employer verify your enrolment."
+            />
           )}
           {activeCodes.map((c) => (
             <div key={c.id} className="flex items-start justify-between py-2 border-b border-gray-100 last:border-0">
@@ -94,10 +114,11 @@ export default function ConsentPage() {
                 <p className="text-xs text-gray-400">Used {c.used_count}×</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium">ACTIVE</span>
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium" aria-label="Status: active">ACTIVE</span>
                 <button
                   onClick={() => setWithdrawId(c.id)}
-                  className="text-xs text-red-600 hover:underline"
+                  className="text-xs text-red-600 hover:underline focus:outline-none focus:ring-2 focus:ring-red-400 rounded"
+                  aria-label={`Withdraw consent for ${c.employer_name}`}
                 >
                   Withdraw
                 </button>
@@ -105,6 +126,7 @@ export default function ConsentPage() {
             </div>
           ))}
         </section>
+        )}
 
         {/* Create form */}
         {!showForm && !created && (

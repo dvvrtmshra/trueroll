@@ -64,32 +64,35 @@ export default function VerifyPage() {
 
   return (
     <Layout>
-      <div className="max-w-md mx-auto mt-10">
+      <div className="max-w-md mx-auto mt-6 md:mt-10 px-2 md:px-0">
         <h1 className="text-lg font-bold text-[#0B2545] mb-1">Verify a student</h1>
         <p className="text-sm text-gray-500 mb-6">
           Enter the 8-character code the student shared with you.
         </p>
 
-        <form onSubmit={handleSubmit} className="mb-6">
-          <label className="block text-xs text-gray-500 mb-1 font-medium">Share code</label>
+        <form onSubmit={handleSubmit} className="mb-6" aria-label="Student verification form">
+          <label htmlFor="share-code-input" className="block text-xs text-gray-500 mb-1 font-medium">Share code</label>
           <div className="flex gap-2">
             <input
+              id="share-code-input"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="XXXX-XXXX"
-              className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20"
+              className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20"
               maxLength={9}
               autoFocus
+              autoCapitalize="characters"
+              aria-describedby={error ? "verify-error" : undefined}
             />
             <button
               type="submit"
               disabled={verifyMutation.isPending}
-              className="bg-[#0B2545] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50"
+              className="bg-[#0B2545] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#0B2545] focus:ring-offset-2"
             >
               {verifyMutation.isPending ? "Checking…" : "Verify"}
             </button>
           </div>
-          {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
+          {error && <p id="verify-error" className="text-xs text-red-600 mt-2" role="alert">{error}</p>}
         </form>
 
         {result && style && (

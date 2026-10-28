@@ -1,4 +1,4 @@
-.PHONY: seed reset-demo test run evaluate
+.PHONY: seed reset-demo test run evaluate e2e
 
 # ── Schema and seed data ──────────────────────────────────────────────────────
 
@@ -41,3 +41,11 @@ docker-down:
 
 evaluate:
 	cd backend && python -m scripts.evaluate_anomaly && python -m scripts.evaluate
+
+# ── End-to-end tests (Phase 10 — requires backend + frontend running) ─────────
+
+e2e:
+	cd frontend && npx playwright test e2e/demo-script.spec.ts
+
+e2e-ui:
+	cd frontend && npx playwright test --ui

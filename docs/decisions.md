@@ -232,3 +232,31 @@ adding. In Phase 3 (ingestion), if a cleaner separation is needed, a dedicated
 **Decision:** `make evaluate` runs `scripts.evaluate_anomaly` then `scripts.evaluate` in sequence. The anomaly eval writes `models/anomaly_eval.json`; the master eval reads it and also writes `models/evaluation_summary.json`.
 
 **Rationale:** S24 requires both files; separating the two scripts keeps each focused.
+
+---
+
+## Phase 10 — Polish
+
+### D25. Mobile layout: sidebar overlay on small screens
+
+**Decision:** On screens narrower than `md` (768px), the sidebar is hidden by default and shown as a full-height overlay when the hamburger button is tapped. On `md+` it behaves as before (collapsible column).
+
+**Rationale:** The spec requires a mobile pass for student and employer views. A separate bottom-nav was considered but the existing sidebar structure already handles all roles; an overlay is lighter and avoids duplicating nav logic.
+
+### D26. Hindi labels: bilingual (English + Hindi) not full translation
+
+**Decision:** Student screens show English primary text with Hindi in a lighter weight beside it (via `<span lang="hi">`). Full Hindi translation was not specified; bilingual labels satisfy the "Hindi student labels" requirement without needing a localisation framework.
+
+**Rationale:** The spec item says "Hindi for student screens". Full i18n is listed as a section 12 extra. Bilingual labels are the minimal spec-compliant implementation.
+
+### D27. Anomaly z-score MAD=0 fallback
+
+**Decision:** When MAD = 0 (all peers share the same feature value), `_robust_zscore` falls back to `(value - median) / max(peer_max, 0.01)` instead of returning 0.0. This gives a meaningful score when the subject is the only non-zero value in the peer group.
+
+**Rationale:** The planted LATE_SURGE test produced score=0 because all normal peers had late_share_14d=0, giving MAD=0. The fallback preserves the intent: a single outlier in an otherwise-uniform peer group is highly anomalous.
+
+### D28. Playwright test suite runs against live servers
+
+**Decision:** The Playwright e2e tests (`frontend/e2e/demo-script.spec.ts`) require both the backend (port 8000) and frontend (port 5173) to be running. `make e2e` does not start them; the developer runs them in separate terminals first.
+
+**Rationale:** Starting dev servers inside the test runner risks port conflicts and complicates CI. The README documents the three-terminal procedure. A GitHub Actions workflow is a section 12 extra.

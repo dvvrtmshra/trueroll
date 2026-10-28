@@ -15,12 +15,13 @@ const QUICK_ROLES: QuickRole[] = [
   { label: "AICTE National Officer", email: "officer.national@trueroll.demo", color: "bg-[#0B2545] hover:bg-blue-900" },
   { label: "AICTE Regional Officer (North)", email: "officer.north@trueroll.demo", color: "bg-[#0B2545] hover:bg-blue-900" },
   { label: "AICTE Regional Officer (South)", email: "officer.south@trueroll.demo", color: "bg-[#0B2545] hover:bg-blue-900" },
-  { label: "College Admin", email: "admin.inst001@trueroll.demo", color: "bg-teal-700 hover:bg-teal-800" },
+  { label: "College Admin (INST-0001)", email: "admin.inst0001@trueroll.demo", color: "bg-teal-700 hover:bg-teal-800" },
   { label: "Rules Owner", email: "rules.owner@trueroll.demo", color: "bg-indigo-700 hover:bg-indigo-800" },
-  { label: "Student", email: "student1@trueroll.demo", color: "bg-green-700 hover:bg-green-800" },
-  { label: "Employer", email: "employer1@trueroll.demo", color: "bg-amber-700 hover:bg-amber-800" },
+  { label: "Rules Approver", email: "rules.approver@trueroll.demo", color: "bg-indigo-600 hover:bg-indigo-700" },
+  { label: "Student (verified)", email: "student.verified@trueroll.demo", color: "bg-green-700 hover:bg-green-800" },
+  { label: "Employer (DemoTech)", email: "employer.demotech@trueroll.demo", color: "bg-amber-700 hover:bg-amber-800" },
   { label: "Auditor", email: "auditor@trueroll.demo", color: "bg-gray-700 hover:bg-gray-800" },
-  { label: "System Admin", email: "admin@trueroll.demo", color: "bg-red-700 hover:bg-red-800" },
+  { label: "System Admin", email: "sysadmin@trueroll.demo", color: "bg-red-700 hover:bg-red-800" },
 ];
 
 export default function LoginPage() {
@@ -116,6 +117,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="you@trueroll.demo"
+                data-testid="email-input"
               />
             </div>
             {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -123,6 +125,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-[#0B2545] text-white rounded py-2 text-sm font-medium hover:bg-blue-900 disabled:opacity-50"
+              data-testid="request-otp"
             >
               {loading ? "Sending…" : "Send OTP"}
             </button>
@@ -154,6 +157,7 @@ export default function LoginPage() {
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 tracking-widest text-center text-lg"
                 placeholder="123456"
                 autoFocus
+                data-testid="otp-input"
               />
             </div>
             {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -161,6 +165,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-[#0B2545] text-white rounded py-2 text-sm font-medium hover:bg-blue-900 disabled:opacity-50"
+              data-testid="verify-otp"
             >
               {loading ? "Verifying…" : "Sign in"}
             </button>

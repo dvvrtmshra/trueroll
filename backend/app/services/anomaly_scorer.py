@@ -77,7 +77,10 @@ def _robust_zscore(value: float, peers: list[float]) -> float:
     med = float(np.median(arr))
     mad = float(np.median(np.abs(arr - med)))
     if mad == 0:
-        return 0.0
+        # Fall back: if all peers are at the same level, distance from that level
+        peer_max = float(np.max(arr)) if len(arr) > 0 else 0.0
+        scale = max(peer_max, 0.01)  # avoid div-by-zero when all peers are 0
+        return (value - med) / scale
     return (value - med) / (1.4826 * mad)
 
 
