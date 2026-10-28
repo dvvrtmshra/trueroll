@@ -75,12 +75,12 @@ switch ($Command) {
         pip install -r requirements.txt
         Set-Location $FrontendDir
         npm install
-        Write-Host "Done. Run '.\run.ps1 seed' next." -ForegroundColor Green
+        Write-Host "Done. Run .\run.ps1 seed next." -ForegroundColor Green
     }
 
     default {
         Write-Host ""
-        Write-Host "TrueRoll — available commands:" -ForegroundColor Cyan
+        Write-Host "TrueRoll -- available commands:" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "  .\run.ps1 install        Install Python + Node dependencies"
         Write-Host "  .\run.ps1 seed           Create database and load demo data"
@@ -97,7 +97,7 @@ switch ($Command) {
         Write-Host "  3. .\run.ps1 seed"
         Write-Host "  4. .\run.ps1 run-backend    (keep open)"
         Write-Host "  5. .\run.ps1 run-frontend   (new terminal, keep open)"
-        Write-Host "  6. Open http://localhost:5173"
+        Write-Host "  6. Open http://localhost:5173 in your browser"
         Write-Host ""
     }
 }
